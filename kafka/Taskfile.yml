@@ -1,0 +1,29 @@
+# https://taskfile.dev
+version: '3'
+tasks:
+  hello:
+    cmds:
+      - echo 'Hello Task https://taskfile.dev !'
+    silent: true
+  
+  # ==> Caveats
+  # To have launchd start kafka now and restart at login:
+  #   brew services start kafka
+  # Or, if you don't want/need a background service you can just run:
+  #   zookeeper-server-start /usr/local/etc/kafka/zookeeper.properties & kafka-server-start /usr/local/etc/kafka/server.properties
+  start:
+    cmds:
+    - zookeeper-server-start /usr/local/etc/kafka/zookeeper.properties & kafka-server-start /usr/local/etc/kafka/server.properties
+  version:
+    cmds:
+    - kafka-configs --version
+  topic:
+    cmds:
+    - kafka-topics --list --bootstrap-server localhost:9092
+  log:
+    desc: show logs
+    cmds:
+      - tail -f /usr/local/var/lib/kafka-logs/*
+
+includes:
+  os: ./Taskfile_{{OS}}.yml
