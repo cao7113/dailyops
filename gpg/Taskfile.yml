@@ -19,6 +19,8 @@ tasks:
     cmds:
     - gpg -k # public keys
     # - gpg -K # secret keys
+    # - gpg -k --keyid-format short
+    # - gpg --list-secret-keys --keyid-format LONG
 
   bot-gen:
     desc: try gen key
@@ -34,6 +36,7 @@ tasks:
     desc: generate demo key
     cmds:
     - gpg --quick-gen-key --batch --passphrase {{.testpassphase}} {{.testu1}}
+    # - gpg --full-generate-key {{.testu1}}
 
   hi-crypt:
     desc: try encrypt and decrypt
@@ -48,6 +51,15 @@ tasks:
       gpg -a --detach-sign --local-user test1 --output test.txt.asc --yes test.txt
       cat  test.txt.asc
       gpg --local-user test1 --verify test.txt.asc test.txt
+      rm test.txt test.txt.asc
+
+  hi-sym:
+    cmds:
+    - |
+      echo "hi gpg" > test.txt
+      gpg --symmetric -a test.txt
+      cat  test.txt.asc
+      gpg -d test.txt.asc
       rm test.txt test.txt.asc
     
   del:
@@ -75,11 +87,26 @@ tasks:
     cmds:
     - gpg --keyserver hkp://subkeys.pgp.net --search-keys your-uid
 
+  ls-keyserver:
+    cmds:
+      - |
+        cat <<-EOF
+          ## 公钥服务器列表, 选择一个即可，服务之间会同步数据
+          http://keyserver.ubuntu.com/
+          hkps://hkps.pool.sks-keyservers.net
+          hkp://pool.sks-keyservers.net
+          hkp://keys.gnupg.net
+          hkp://pgp.mit.edu
+          hkp://pgp.uni-mainz.de
+          hkp://keyserver.linux.it
+        EOF
+
   rand:
     cmds:
     - gpg -a --gen-random 2 4
 
   ## keyabase.io
+  
 
   install-gpg:
     desc: install GNU utils
