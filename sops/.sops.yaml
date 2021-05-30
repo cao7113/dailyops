@@ -1,0 +1,11 @@
+
+creation_rules:
+  - path_regex: demo\.encrypted\.env$
+    pgp: >-
+      C30F47A05EFF3BE193E1A3F2663CC89C2B493562
+
+  - path_regex: shared\.env$
+    pgp: >-
+      C30F47A05EFF3BE193E1A3F2663CC89C2B493562,
+      AF523C6969E9B2B443CBF18CB408ECF86C84DC43
+    

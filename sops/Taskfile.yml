@@ -1,0 +1,34 @@
+# https://taskfile.dev
+version: '3'
+vars:
+  encfile: demo.encrypted.env
+tasks:
+  init:
+    status:
+      - test -f demo.encrypted.env
+    cmds:
+    - echo test=just-test-sops > demo.env
+    - sops -p xxx-your-gpg-finger-print -e demo.env > {{.encfile}}
+    # - export GPG_TTY=$(tty)
+    - task: demo
+    - rm demo.env
+
+  demo:
+    cmds:
+    - sops -d {{.encfile}}
+
+  try:
+    cmds:
+      - task: demo
+      - sops {{.encfile}}
+      - task: demo
+  
+  add-gpg:
+    cmds:
+      - sops --rotate --in-place --add-pgp <bobby-key-id> {{.encfile}}
+      #- sops --rotate --in-place --rm-pgp <bobby-key-id> {{.encfile}}
+
+  install-sops:
+    desc: install sops
+    cmds:
+    - brew install sops
