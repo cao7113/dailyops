@@ -1,0 +1,6 @@
+# https://taskfile.dev
+version: '3'
+tasks:
+  base64:
+    cmds:
+    - echo hi | base64 | base64 -d

@@ -1,0 +1,90 @@
+# https://taskfile.dev
+version: '3'
+vars:
+  testu1: test1
+  testpassphase: test123
+  testbot1: test-bot1
+
+tasks:
+  help:
+    desc: show help
+    cmds:
+    # - gpg --version
+    # - gpg --help
+    - man gpg
+    # - info gpg
+
+  list:
+    desc: list keys
+    cmds:
+    - gpg -k # public keys
+    # - gpg -K # secret keys
+
+  bot-gen:
+    desc: try gen key
+    cmds:
+    - task: list
+    - gpg --quick-gen-key {{.testbot1}}
+    - gpg --export --armor {{.testbot1}}
+    # - gpg --export -a D4F53C5E7370689B2AEC86B158C8015B7998429A
+    - gpg --delete-secret-keys {{.testbot1}} && gpg --delete-keys {{.testbot1}}
+    - task: list
+
+  gen:
+    desc: generate demo key
+    cmds:
+    - gpg --quick-gen-key --batch --passphrase {{.testpassphase}} {{.testu1}}
+
+  hi-crypt:
+    desc: try encrypt and decrypt
+    cmds:
+    - echo "hi gpg" | gpg -a -e -r test2 | gpg -dq
+  
+  hi-sign:
+    cmds:
+    #- echo "hi gpg" | gpg --clear-sign --local-user test2
+    - |
+      echo "hi gpg" > test.txt
+      gpg -a --detach-sign --local-user test1 --output test.txt.asc --yes test.txt
+      cat  test.txt.asc
+      gpg --local-user test1 --verify test.txt.asc test.txt
+      rm test.txt test.txt.asc
+    
+  del:
+    desc: "delete a key e.g. task del -- testu1"
+    cmds:
+    # use finger-print
+    - gpg --delete-secret-and-public-key --batch --yes {{.CLI_ARGS}} || true
+    # - gpg --delete-secret-keys {{.CLI_ARGS}} || true
+    # - gpg --delete-keys {{.CLI_ARGS}} || true
+    - task: list
+  
+  ls-rev:
+    cmds:
+    - ls -al ~/.gnupg/openpgp-revocs.d
+
+  export:
+    cmds:
+    - gpg -a --export {{.testu1}}
+    # - gpg -a --export --output {{.testu1}}.pub {{.testu1}}
+    - cat {{.testu1}}.pub
+    - rm {{.testu1}}.pub
+    # - gpg -a --export-secret-keys --output {{.testu1}}.asc {{.testu1}} # require passphase
+
+  search:
+    cmds:
+    - gpg --keyserver hkp://subkeys.pgp.net --search-keys your-uid
+
+  rand:
+    cmds:
+    - gpg -a --gen-random 2 4
+
+  ## keyabase.io
+
+  install-gpg:
+    desc: install GNU utils
+    status:
+    - which gpg > /dev/null
+    cmds:
+      # GNU Core Utils, GnuPG
+      - brew install gpg
