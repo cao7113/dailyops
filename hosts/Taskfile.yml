@@ -1,0 +1,8 @@
+# https://taskfile.dev
+version: "3"
+tasks:
+  install-hostctl:
+    desc: https://guumaster.github.io/hostctl
+    # https://github.com/guumaster/hostctl
+    cmds:
+      - brew install guumaster/tap/hostctl
