@@ -1,0 +1,19 @@
+# https://taskfile.dev
+version: "3"
+tasks:
+  play: ansible-playbook -i inventory.yml playbook.yml # -vvvv
+  # ad-hoc command, use default module: command
+  hosts-info: ansible -i inventory.yml -a "uname -a" a1
+  ping-all: ansible all_hosts -m ping -i inventory.yml
+  list-hosts: ansible-inventory -i inventory.yml --list
+
+  show-facts: ansible -m ansible.builtin.setup -i inventory.yml a1
+
+  # get all facts
+  # ansible -m ansible.builtin.setup -i inventory.yml a1
+
+  ## Setup quickup vms with OrbStack
+  setup:
+    cmds:
+      - orb create -a amd64 ubuntu:jammy a1
+      - orb create -a amd64 ubuntu:jammy a2

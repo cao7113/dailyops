@@ -1,0 +1,22 @@
+# https://taskfile.dev
+version: '2'
+tasks:
+  install-etcd:
+    desc: install etcd
+    cmds:
+      - brew install etcd
+      - etcdctl version
+
+  try:
+    cmds:
+      - etcdctl put name test
+      - etcdctl get /dev/a
+      - etcdctl put /dev/a a1
+      - etcdctl put /dev/b b1
+      - etcdctl get /dev --prefix
+      # all keys prefix with /dev
+      - etcdctl get /dev --prefix --keys-only
+      # all keys /*
+      - etcdctl get / --prefix --keys-only
+      # all keys
+      - etcdctl get "" --prefix --keys-only

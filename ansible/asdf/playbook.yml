@@ -1,0 +1,51 @@
+---
+- name: Install asdf as https://asdf-vm.com/zh-hans/guide/getting-started.html
+  hosts: orb_hosts
+  vars:
+    asdf_home: "$HOME/.asdf"
+    asdf_version: "v0.14.0"
+  tasks:
+    - name: Install packages
+      ansible.builtin.apt:
+        name:
+          - curl
+          - git
+        state: latest
+      become: yes
+
+    - name: Clone asdf repository
+      ansible.builtin.git:
+        repo: "https://github.com/asdf-vm/asdf.git"
+        dest: "{{asdf_home}}"
+        version: "{{asdf_version}}"
+        clone: yes
+        update: no
+      become: no
+
+    - name: Sourced asdf in .bashrc
+      ansible.builtin.blockinfile:
+        path: "~/.bashrc"
+        append_newline: true
+        prepend_newline: true
+        block: |
+          . "{{asdf_home}}/asdf.sh"
+          . "{{asdf_home}}/completions/asdf.bash"
+        insertafter: EOF
+        marker: "## {mark} ANSIBLE MANAGED ASDF BLOCK"
+
+    - name: Test asdf version in shell env
+      ansible.builtin.command: "{{asdf_home}}/bin/asdf --version"
+      register: asdf_version_check
+      # https://docs.ansible.com/ansible/latest/playbook_guide/playbooks_error_handling.html#defining-changed
+      changed_when: false
+    - ansible.builtin.debug: var=asdf_version_check.stdout_lines
+
+    - name: Congrats.
+      ansible.builtin.debug:
+        msg: "asdf installed into: {{asdf_home}} with version: {{asdf_version}}"
+
+  # handlers:
+  #   - name: update asdf
+  #     ansible.builtin.shell: |
+  #       . "$HOME/.asdf/asdf.sh"
+  #       . "$HOME/.asdf/completions/asdf.bash"

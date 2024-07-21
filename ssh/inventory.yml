@@ -1,0 +1,18 @@
+# Automatically accept host SSH keys
+all:
+  vars:
+    # Specify the Python interpreter
+    # ansible_python_interpreter=/usr/bin/python3
+    # Automatically accept host SSH keys
+    ansible_ssh_extra_args: "-o StrictHostKeyChecking=no"
+
+ssh_hosts:
+  hosts:
+    # use self-installed openssh-server on machine ssh1 at port: 22
+    self_ssh:
+      # use orb provided domain
+      ansible_host: ssh1.orb.local
+
+    ## use orb built-in ssh-server at port 32222, more ref: `orb ssh`
+    orb_ssh:
+      ansible_host: ssh1@orb

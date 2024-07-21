@@ -1,0 +1,19 @@
+# https://taskfile.dev
+version: "3"
+tasks:
+  install:
+    # https://learn.hashicorp.com/tutorials/packer/get-started-install-cli
+    desc: install packer
+    cmds:
+      - |
+        brew tap hashicorp/tap || true
+        brew install hashicorp/tap/packer
+      - packer version
+      - packer -help
+
+  upgrade:
+    desc: upgrade latest version
+    cmds:
+      - brew update
+      - brew upgrade hashicorp/tap/packer
+      - packer version

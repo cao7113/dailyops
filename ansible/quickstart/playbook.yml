@@ -1,0 +1,50 @@
+- name: My first play
+  hosts: orb_hosts
+  vars:
+    test_var1: this is test var1
+    home_dir: "~"
+  tasks:
+    - name: Ping my hosts
+      ansible.builtin.ping:
+
+    - name: Print message
+      ansible.builtin.debug:
+        msg: Hello ansible, test_var1={{test_var1 | quote}}, home_dir={{home_dir}}
+
+    # https://docs.ansible.com/ansible/latest/reference_appendices/special_variables.html
+    # - name: Test magic vars
+    #   ansible.builtin.debug:
+    #     var: ansible_play_name
+    # - name: Test magic vars hostvars
+    #   ansible.builtin.debug:
+    #     var: hostvars
+
+    # - name: Test connection user
+    #   ansible.builtin.debug:
+    #     msg: "get user: {{ansible_facts['env']['USER']}}"
+
+    # - name: Test connection user group
+    #   ansible.builtin.command: id -gn {{ansible_facts['env']['USER']}}
+    #   register: user_group
+    #   changed_when: false
+
+    # - name: Test user info
+    #   ansible.builtin.debug:
+    #     msg: "user group: {{user_group.stdout}} for user: {{ansible_facts['env']['USER']}}"
+
+    # - name: install htop
+    #   ansible.builtin.apt:
+    #     pkg:
+    #       - htop
+    #     # default state is present
+    #     state: latest
+    #   become: true
+# # ansible-galaxy install nginxinc.nginx
+# - name: Try nginx role as https://github.com/nginxinc/ansible-role-nginx
+#   hosts: orb_hosts
+#   become: true
+#   tasks:
+#     - name: Install NGINX
+#       ansible.builtin.include_role:
+#         name: nginxinc.nginx
+

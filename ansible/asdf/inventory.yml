@@ -1,0 +1,8 @@
+# An inventory in YAML format becomes a sensible option as the number of managed nodes increases.
+# Ensure that group names are meaningful and unique. Group names are also case sensitive.
+orb_hosts:
+  hosts:
+    # the key is host unique name
+    # or use format: "a1@orb:"
+    a1:
+      ansible_host: a1@orb

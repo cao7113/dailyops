@@ -1,0 +1,55 @@
+---
+- name: Install asdf erlang plugin
+  hosts: orb_hosts
+  tasks:
+    # https://github.com/asdf-vm/asdf-erlang?tab=readme-ov-file#ubuntu-2404-lts
+    # apt-get -y install build-essential autoconf m4 libncurses5-dev libwxgtk3.2-dev libwxgtk-webview3.2-dev libgl1-mesa-dev libglu1-mesa-dev libpng-dev libssh-dev unixodbc-dev xsltproc fop libxml2-utils libncurses-dev openjdk-11-jdk
+    - name: Install dependency packages
+      ansible.builtin.apt:
+        name:
+          - curl
+          - git
+          - build-essential
+          - autoconf
+          - m4
+          - libncurses5-dev
+          # - libwxgtk3.2-dev
+          # - libwxgtk-webview3.2-dev
+          - libgl1-mesa-dev
+          - libglu1-mesa-dev
+          - libpng-dev
+          - libssh-dev
+          - unixodbc-dev
+          - xsltproc
+          - fop
+          - libxml2-utils
+          - libncurses-dev
+          # - openjdk-11-jdk
+        state: latest
+      become: yes
+
+    - name: Install asdf Erlang plugin
+      ansible.builtin.shell: |
+        . "$HOME/.asdf/asdf.sh"
+        asdf plugin add erlang
+      args:
+        creates: "~/.asdf/plugins/erlang"
+        executable: /bin/bash
+      become: no
+
+    - name: Install and set Erlang 26.2 as global
+      ansible.builtin.shell: |
+        export KERL_CONFIGURE_OPTIONS="--disable-debug --without-javac"
+        . "$HOME/.asdf/asdf.sh"
+        asdf install erlang 26.2
+        asdf global erlang 26.2
+      args:
+        creates: "~/.asdf/installs/erlang/26.2/bin/erl"
+        executable: /bin/bash
+
+    - name: Install rebar3 build tool
+      ansible.builtin.apt:
+        name:
+          - rebar3
+        state: latest
+      become: yes

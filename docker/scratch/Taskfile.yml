@@ -1,0 +1,7 @@
+# https://taskfile.dev
+version: "3"
+tasks:
+  run: docker run --rm -it try-scratch sh
+
+  # docker build --help
+  build: docker build --tag try-scratch --no-cache --progress plain .

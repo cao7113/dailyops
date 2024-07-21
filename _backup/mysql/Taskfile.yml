@@ -1,0 +1,53 @@
+# https://taskfile.dev
+version: "3"
+vars:
+  trynet: try-net
+  mysql_name: try-mysql
+  mysql_root_secret: root
+
+tasks:
+  netshot:
+    deps:
+      - setup-try-net
+      - setup-mysql-server
+    cmds:
+      - docker run -it --network {{.trynet}} nicolaka/netshoot
+
+  sql:
+    deps: [setup-mysql-server]
+    cmds:
+      - docker exec -it {{.mysql_name}} mysql -p{{.mysql_root_secret}}
+
+  mysql-sh:
+    deps: [setup-mysql-server]
+    cmds:
+      - docker exec -it {{.mysql_name}} bash
+
+  setup-mysql-server:
+    desc: try mysql server
+    status:
+      - test -n "$(docker ps -q -f name={{.mysql_name}})"
+    deps: [setup-try-net]
+    cmds:
+      - docker rm -f {{.mysql_name}} || true
+      - |
+        docker run -d --name {{.mysql_name}} \
+        --network {{.trynet}} --network-alias mysql \
+        -v try-mysql-data:/var/lib/mysql \
+        -e MYSQL_ROOT_PASSWORD={{.mysql_root_secret}} \
+        -e MYSQL_DATABASE=try \
+        mysql:5.7
+      # https://github.com/vishnubob/wait-for-it
+      # https://github.com/ufoscout/docker-compose-wait
+      - sleep 2
+      - docker exec -it {{.mysql_name}} mysql -p{{.mysql_root_secret}} -e "select version();"
+      - docker exec -it {{.mysql_name}} mysql -p{{.mysql_root_secret}} -e "show databases;"
+    # force-clean data if new setup
+    # - docker volume rm try-mysql-data
+
+  setup-try-net:
+    desc: try network
+    status:
+      - test -n "$(docker network ls -q -f name={{.trynet}})"
+    cmds:
+      - docker network create {{.trynet}}

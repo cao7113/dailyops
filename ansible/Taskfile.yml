@@ -1,0 +1,9 @@
+# https://taskfile.dev
+version: "3"
+tasks:
+  ## Setup
+  setup:
+    cmds:
+      - brew install ansible
+      - ansible --version
+  # or: pip install ansible

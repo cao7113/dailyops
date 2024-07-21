@@ -1,0 +1,10 @@
+# https://taskfile.dev
+version: "3"
+tasks:
+  run: docker run --rm -it stages sh
+  builder: docker run --rm -it stages-builder sh
+
+  # docker build --help
+  build: docker build --tag stages --no-cache --progress plain .
+  build-builder: docker build --target builder -t stages-builder --no-cache --progress plain .
+  # DOCKER_BUILDKIT=1 docker build .

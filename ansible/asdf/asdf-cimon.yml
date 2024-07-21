@@ -1,0 +1,23 @@
+---
+# 参考例子： https://jayschmidt.us/blog/asdfansible/
+- name: Try https://github.com/cimon-io/ansible-role-asdf/tree/master
+  hosts: orb_hosts
+  # become: true
+  tasks:
+    - name: Test connection user group
+      ansible.builtin.command: id -gn {{ansible_facts['env']['USER']}}
+      register: user_group
+      changed_when: false
+
+    # prepare: ansible-galaxy role install cimon-io.asdf
+    - name: Install Asdf
+      ansible.builtin.include_role:
+        name: cimon-io.asdf
+      vars:
+        asdf_user: "{{ansible_facts['env']['USER']}}"
+        asdf_group: "{{user_group.stdout}}"
+        # asdf_dir: /opt/asdf-vm
+        asdf_plugins:
+          - name: erlang
+            versions: ["27.0"]
+            global: "27.0"

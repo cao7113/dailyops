@@ -1,0 +1,23 @@
+# https://taskfile.dev
+version: "3"
+tasks:
+  # start-hello-pg: docker run --name hello-pg -e POSTGRES_PASSWORD=postgres -d postgres
+  # psql: docker run -it --rm  --link hello-pg:hello-pg postgres psql -h hello-pg -U postgres
+  # pg: docker run -d -p 5432:5432 --name db -e POSTGRES_PASSWORD=postgres postgres
+  # pgweb: docker run -p 8081:8081 --link db:db -e PGWEB_DATABASE_URL=postgres://postgres:postgres@db:5432/postgres sosedoff/pgweb
+
+  dcom-up: docker compose up -d
+  dcom-pg: docker compose exec pg sh
+  dcom-psql: docker compose exec pg psql -U postgres
+  pgcli: pgcli postgresql://postgres:postgres@localhost:15432
+  dcom-web: open http://localhost:8081
+
+  ## Get images
+  # https://github.com/OpenLinkOS/registry-mirrors
+  get-images: |
+    docker pull docker.linkos.org/library/postgres
+    docker tag docker.linkos.org/library/postgres postgres
+    # docker rmi docker.linkos.org/library/postgres
+
+    docker pull docker.linkos.org/sosedoff/pgweb
+    docker tag docker.linkos.org/sosedoff/pgweb sosedoff/pgweb

@@ -1,0 +1,21 @@
+# https://taskfile.dev
+version: "3"
+includes:
+  # fly related tasks
+  fly-io:
+    taskfile: ./Taskfile-flyio.yml
+    aliases: [f, fly]
+    optional: true
+
+tasks:
+  dk-build: docker build -t flyio:test -t ghcr.io/cao7113/flyio:test .
+  dk-run: docker run --rm -it flyio:test sh
+  dk-push: |
+    # docker tag flyio:test ghcr.io/cao7113/flyio:test
+    docker push ghcr.io/cao7113/flyio:test
+
+  # how to fetch private image
+  deploy: fly deploy --image ghcr.io/cao7113/flyio:test --debug --verbose
+
+  ## dns dig https://fly.io/docs/networking/private-networking/#fly-io-internal-dns
+  # dig _apps.internal txt

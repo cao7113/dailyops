@@ -1,0 +1,39 @@
+# https://taskfile.dev
+version: "3"
+tasks:
+  orb: open https://orb.local
+
+  ## Containers
+  hello: open http://localhost
+  run-hello: docker run -p 80:80 docker/getting-started
+  # orb config docker
+  # orb logs docker
+
+  ## Machines
+  # Base ubuntu machine
+  conf-uhosts:
+    cmds:
+      - ansible-playbook -i inventory.yml playbook.yml --become
+
+  mk-ubox1:
+    desc: create ubuntu box on jammy 2204 LTS
+    cmds:
+      - orb create ubuntu:jammy --arch amd64 ubox1
+  del-ubox1: orb delete -f ubox1
+  reset-ubox1:
+    cmds:
+      - task del-ubox1 || true
+      - task: mk-ubox1
+      - task: conf-uhosts
+
+  # Base alpine machine
+  mk-abox1:
+    desc: create alpine box on 3.19
+    cmds:
+      - orb create alpine:3.19 --arch amd64 abox1
+
+  ## Get orb ssh info
+  orb-ssh: orb ssh
+
+  ## Setup
+  setup: brew install orbstack

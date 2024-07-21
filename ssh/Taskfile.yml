@@ -1,0 +1,18 @@
+# https://taskfile.dev
+version: "3"
+tasks:
+  play: ansible-playbook -i inventory.yml playbook.yml # -vvvv
+  ssh1-info: ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -q ssh1.orb.local uname -a
+
+  reset-ssh1:
+    cmds:
+      - task: cleanup
+      - task: setup-ssh1
+
+  setup-ssh1:
+    desc: build a base ubuntu machine with ssh-server on ubuntu 2204 LTS
+    cmds:
+      - orb create ubuntu:jammy --arch amd64 ssh1
+      - ansible-playbook -i inventory.yml playbook/setup.yml
+
+  cleanup: orb delete --force ssh1

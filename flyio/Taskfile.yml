@@ -1,0 +1,24 @@
+# https://taskfile.dev
+version: "3"
+
+tasks:
+  ## Setup WireGuard VPN
+  # https://fly.io/docs/networking/private-networking/#set-up-a-private-network-vpn
+  # https://www.wireguard.com/install/
+  # Step1: download Mac App: WireGuard
+
+  # Step2: Create your tunnel configuration
+  wg-create: fly wireguard create
+  # fly wireguard create [your-org] [region] [peer-name]
+  wg-test: dig +short aaaa hello-phx-up-db.internal @fdaa:2:686c::3
+  wg-apps: dig +noall +answer _apps.internal txt
+  apps: dig _apps.internal TXT +short
+  wg-peer: dig +short txt _peer.internal @fdaa:2:686c::3
+  # dig +short aaaa static-rjhe-cao7113-hotmail-com-01J2WP3G0Q2QXTZM6811A2XRF5._peer.internal @fdaa:2:686c::3
+  # dig +short aaaa my-app-name.internal
+
+  # manage WireGuard tunnels
+  # fly wireguard list
+  # ping6 hello-api-elixir.internal
+
+  install-flyctl: brew install flyctl

@@ -1,0 +1,29 @@
+- name: Setup ubuntu
+  hosts: uhosts
+  tasks:
+    - name: install apt packages
+      ansible.builtin.apt:
+        pkg:
+          - curl
+          - git
+          - jq
+          - htop
+          - tree
+          # package manager
+          - snapd
+          # netstat -lnput
+          - net-tools
+          # - tmux
+        state: present
+
+    # https://taskfile.dev/installation/
+    # sudo snap install task --classic
+    - name: install task build tool
+      community.general.snap:
+        name: task
+        state: present
+        classic: true
+
+    - name: everythin ok.
+      ansible.builtin.debug:
+        msg: Congrats.

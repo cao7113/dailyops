@@ -1,0 +1,45 @@
+services:
+  pg:
+    image: postgres
+    container_name: pg
+    restart: always
+    # set shared memory limit when using docker-compose
+    shm_size: 128mb
+    # or set shared memory limit when deploy via swarm stack
+    #volumes:
+    #  - type: tmpfs
+    #    target: /dev/shm
+    #    tmpfs:
+    #      size: 134217728 # 128*2^20 bytes = 128Mb
+    environment:
+      POSTGRES_PASSWORD: postgres
+    ports:
+      # Maps tcp port 5432 on service container to the host
+      - 15432:5432
+    # support below options like in github-actions?
+    # https://docs.docker.com/reference/cli/docker/container/create/#options
+    # options: >-
+    #   --health-cmd pg_isready
+    #   --health-interval 10s
+    #   --health-timeout 5s
+    #   --health-retries 5
+  
+  pgweb:
+    # image: ghcr.io/sosedoff/pgweb:latest
+    image: sosedoff/pgweb
+    container_name: pgweb  # optional
+    restart: always  # optional
+    ports: 
+      - "8081:8081" 
+    links: 
+      - pg:pg
+    environment:
+      - PGWEB_DATABASE_URL=postgres://postgres:postgres@pg:15432/postgres?sslmode=disable
+    depends_on:
+      - pg
+
+  # adminer:
+  #   image: adminer
+  #   restart: always
+  #   ports:
+  #     - 8080:8080

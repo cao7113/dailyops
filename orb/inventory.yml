@@ -1,0 +1,4 @@
+uhosts:
+  hosts:
+    ubox1:
+      ansible_host: ubox1@orb

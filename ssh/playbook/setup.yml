@@ -1,0 +1,21 @@
+# orb -m ssh1 sudo apt -y install openssh-server
+# # copy current user's pub-key to remote server ~/.ssh/authorized_keys
+# ssh-copy-id -f ssh1@orb
+- name: Setup my openssh server
+  hosts: orb_ssh
+  tasks:
+    - name: Install OpenSSH Server
+      become: true
+      ansible.builtin.apt:
+        name:
+          - openssh-server
+          - net-tools
+        state: latest
+
+    - name: Copy current ssh pub key
+      ansible.posix.authorized_key:
+        user: "{{ ansible_facts['env']['USER'] }}"
+        state: present
+        key: "{{ lookup('file', key_path) }}"
+      vars:
+        key_path: "/Users/{{ansible_facts['env']['USER']}}/.ssh/id_rsa.pub"

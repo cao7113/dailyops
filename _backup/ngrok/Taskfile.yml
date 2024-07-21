@@ -1,0 +1,14 @@
+# https://taskfile.dev
+version: "3"
+tasks:
+  try:
+    cmds:
+      # - ngrok http 80
+      - ngrok http 4000
+
+  install:
+    desc: install gnrok
+    cmds:
+      - brew install ngrok/ngrok/ngrok
+      - ngrok --version
+      # - ngrok version

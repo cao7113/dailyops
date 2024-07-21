@@ -1,0 +1,4 @@
+# https://fly.io/docs/reference/configuration/
+
+app = 'hello-pg-test'
+primary_region = 'nrt'
