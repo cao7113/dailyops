@@ -6,6 +6,7 @@ RUN apt-get update -y && \
   apt-get install -y curl iputils-ping dnsutils jq postgresql-client && \
   apt-get clean && rm -f /var/lib/apt/lists/*_*
 
+WORKDIR /app
 RUN touch test-file
 
 CMD ["ping", "-i", "5", "localhost"]
