@@ -21,3 +21,6 @@ tasks:
 
     docker pull docker.linkos.org/sosedoff/pgweb
     docker tag docker.linkos.org/sosedoff/pgweb sosedoff/pgweb
+
+  brew-pg: brew install postgresql@15
+  # brew services start postgresql@15

@@ -4,8 +4,27 @@ vars:
   FLY_DB_APP: hello-pg-test
 
 tasks:
+  sh: fly pg connect -a {{.FLY_DB_APP}}
+  psql: psql postgres://postgres@hello-pg-test.internal:5432
   # https://fly.io/docs/postgres/managing/attach-detach/
-  attach-hello-api: fly postgres attach {{.FLY_DB_APP}} --app hello-api-elixir
-  db: fly pg connect -a {{.FLY_DB_APP}}
+  # why no DATABASE_URL env???
+  attach-test: fly postgres attach {{.FLY_DB_APP}} --app flyuptest
+
+  # start after pg cluster stop by auto_stop
+  start: fly machine start
   # https://fly.io/docs/postgres/getting-started/create-pg-cluster/
   mk-cluster: fly postgres create --autostart --name {{.FLY_DB_APP}}
+
+  ## backup and restore https://fly.io/docs/postgres/managing/backup-and-restore/
+  # fly vol ls
+  # fly vol snaps ls <vol-id>
+  # fly postgres create --snapshot-id <snapshot-id>
+
+  ## Horizontal Scaling https://fly.io/docs/postgres/managing/horizontal-scaling/
+  # fly machine clone e784079b449483 --app hello-pg-test
+
+  # redeploy
+  img: fly image show
+  conf-save: fly config save # --app <app-name>
+  conf: fly config show # --app <app-name>
+  deploy: fly deploy . --image flyio/postgres-flex:15.6

@@ -8,14 +8,28 @@ includes:
     optional: true
 
 tasks:
-  dk-build: docker build -t flyio:test -t ghcr.io/cao7113/flyio:test .
-  dk-run: docker run --rm -it flyio:test sh
-  dk-push: |
-    # docker tag flyio:test ghcr.io/cao7113/flyio:test
-    docker push ghcr.io/cao7113/flyio:test
+  gh: https://github.com/cao7113/dailyops/tree/main/flyio/test
 
-  # how to fetch private image
-  deploy: fly deploy --image ghcr.io/cao7113/flyio:test --debug --verbose
+  dk-build: docker build -t flyio-try .
+  # Mac m1芯片是基于arm架构的，本地构建的镜像不适合在fly.io上（基于amdx86架构）下运行！可在github actions进行构建并push image
+  # https://github.blog/2024-06-03-arm64-on-github-actions-powering-faster-more-efficient-build-systems/
+  # 上面blog说2024年底才支持arm架构runner public 可用
+  # b1: docker buildx build --platform linux/amd64,linux/arm64 -t flyio-try -t ghcr.io/cao7113/flyio-try .
+  dk-sh: docker run --rm -it flyio-try sh
+  dk-push: docker push ghcr.io/cao7113/flyio-try
+
+  ## 可与在 https://github.com/users/cao7113/packages/container/flyio-try/settings 设置镜像的可见性
+  # deploy-img:
+  #   cmds:
+  #     - fly deploy --image ghcr.io/cao7113/flyio-try --debug --verbose
+  #   env:
+  #     FLY_API_TOKEN: $FLY_API_TOKEN
+  fly-deploy: fly deploy
 
   ## dns dig https://fly.io/docs/networking/private-networking/#fly-io-internal-dns
-  # dig _apps.internal txt
+  fly-apps: dig _apps.internal txt
+  fly-sh: fly ssh console
+
+  ## Machines
+  # try with ubuntu
+  try: fly machine run --shell

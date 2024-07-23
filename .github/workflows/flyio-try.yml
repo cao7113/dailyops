@@ -1,0 +1,93 @@
+name: Flyio Test Docker Image
+on:
+  push:
+    branches:
+      - flyio/test
+
+permissions:
+  contents: write
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+
+jobs:
+  push-images:
+    name: Push Docker image to Docker Hub and Github Packages
+    runs-on: ubuntu-latest
+    # needs: check-ci
+    permissions:
+      packages: write
+      contents: read
+      attestations: write
+      id-token: write
+    steps:
+      - name: Check out the repo
+        uses: actions/checkout@v4
+
+      - name: Log in to the Container registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      # # https://github.com/docker/metadata-action
+      # - name: Extract metadata (tags, labels) for Docker
+      #   id: meta
+      #   uses: docker/metadata-action@v5
+      #   with:
+      #     images: |
+      #       ghcr.io/cao7113/flyio-try
+
+      # https://github.com/docker/build-push-action
+      - name: Build and push Docker image
+        id: push
+        uses: docker/build-push-action@v6
+        with:
+          context: flyio/test
+          file: flyio/test/Dockerfile
+          push: true
+          tags: ghcr.io/cao7113/flyio-try:latest
+          # tags: ${{ steps.meta.outputs.tags }}
+          # labels: ${{ steps.meta.outputs.labels }}
+
+      # # https://docs.github.com/en/actions/publishing-packages/publishing-docker-images#publishing-images-to-docker-hub
+      # - name: Generate artifact attestation
+      #   uses: actions/attest-build-provenance@v1
+      #   with:
+      #     subject-name: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME}}
+      #     subject-digest: ${{ steps.push.outputs.digest }}
+      #     push-to-registry: true
+
+  # test-docker-images:
+  #   name: Test latest docker images
+  #   needs: push-images
+  #   uses: ./.github/workflows/docker.yml
+
+  fly-deploy:
+    name: Deploy fly app
+    runs-on: ubuntu-latest
+    needs: push-images
+    defaults:
+      run:
+        shell: bash
+        working-directory: flyio/test
+    concurrency: deploy-group
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # https://github.com/superfly/flyctl-actions
+      # https://github.com/marketplace/actions/github-action-for-flyctl
+      - name: Setup flyctl
+        uses: superfly/flyctl-actions/setup-flyctl@master
+
+      - name: Deploy fly app
+        run: flyctl deploy --image ghcr.io/cao7113/flyio-try --debug --verbose
+        env:
+          # https://github.com/superfly/flyctl-actions?tab=readme-ov-file#secrets
+          # https://fly.io/docs/app-guides/continuous-deployment-with-github-actions/#speed-run-your-way-to-continuous-deployment
+          # gen cmd: fly tokens create deploy -x 999999h
+          # set in Github Settings -> Secrets -> Actions -> Repository secrets
+          FLY_API_TOKEN: ${{ secrets.FLYIO_TEST_API_TOKEN }}
