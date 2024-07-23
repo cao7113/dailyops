@@ -10,14 +10,14 @@ includes:
 tasks:
   gh: https://github.com/cao7113/dailyops/tree/main/flyio/test
 
-  dk-build: docker build -t flyio-try .
-  dk-sh: docker run --rm -it flyio-try sh
-
+  # Note: no auto-stop or auto-start
   fly-sh: fly ssh console
-  fly-deploy: fly deploy
+  fly-up: fly scale count 1
+  fly-down: fly scale count 0
+  fly-deploy: fly deploy --image ghcr.io/cao7113/flyio-try
   ## dns dig https://fly.io/docs/networking/private-networking/#fly-io-internal-dns
   fly-apps: dig _apps.internal txt
 
-  ## Machines
-  # try with ubuntu
-  try: fly machine run --shell
+  ## Docker
+  dk-build: docker build -t flyio-try .
+  dk-sh: docker run --rm -it flyio-try sh

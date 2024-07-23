@@ -1,3 +1,0 @@
-FROM busybox
-# CMD "ping -i 3 localhost"
-CMD ["ping", "-i", "3", "localhost"]

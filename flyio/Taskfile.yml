@@ -2,6 +2,10 @@
 version: "3"
 
 tasks:
+  ## Fly Machines
+  # try with tmp ubuntu
+  try: fly machine run --shell
+
   ## Setup WireGuard VPN
   # https://fly.io/docs/networking/private-networking/#set-up-a-private-network-vpn
   # https://www.wireguard.com/install/

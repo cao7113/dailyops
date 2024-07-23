@@ -7,6 +7,6 @@ RUN apt-get update -y && \
   apt-get clean && rm -f /var/lib/apt/lists/*_*
 
 WORKDIR /app
-RUN touch test-file
+RUN touch just-test-file
 
 CMD ["ping", "-i", "5", "localhost"]
