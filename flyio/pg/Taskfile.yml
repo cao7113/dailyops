@@ -1,11 +1,13 @@
 # https://taskfile.dev/usage/
 version: "3"
 vars:
-  FLY_DB_APP: hello-pg-test
+  FLY_DB_APP: flypg-test
 
 tasks:
-  sh: fly pg connect -a {{.FLY_DB_APP}}
-  psql: psql postgres://postgres@hello-pg-test.internal:5432
+  # this use default generated OPERATOR_PASSWORD or explicit specified by --password option when create cluster
+  psql: fly pg connect -a {{.FLY_DB_APP}}
+  # require WireGuard vpn connected! password ref local/.env
+  psql-local: psql postgres://postgres@flypg-test.internal:5432
   # https://fly.io/docs/postgres/managing/attach-detach/
   # why no DATABASE_URL env???
   attach-test: fly postgres attach {{.FLY_DB_APP}} --app flyuptest
@@ -13,18 +15,28 @@ tasks:
   # start after pg cluster stop by auto_stop
   start: fly machine start
   # https://fly.io/docs/postgres/getting-started/create-pg-cluster/
-  mk-cluster: fly postgres create --autostart --name {{.FLY_DB_APP}}
+  setup: fly postgres create --autostart --region=nrt --name {{.FLY_DB_APP}} 
+  cleanup: fly app destroy  {{.FLY_DB_APP}} --yes
 
   ## backup and restore https://fly.io/docs/postgres/managing/backup-and-restore/
   # fly vol ls
   # fly vol snaps ls <vol-id>
   # fly postgres create --snapshot-id <snapshot-id>
 
+  ## Tunning vm and conf
+  # vm512: fly machine update e784079b449483 --vm-memory 512
+  conf: fly postgres config show
+  # fly postgres config update --max-connections 500
+
   ## Horizontal Scaling https://fly.io/docs/postgres/managing/horizontal-scaling/
   # fly machine clone e784079b449483 --app hello-pg-test
 
   # redeploy
+  deploy: fly deploy . --image flyio/postgres-flex:15.6
   img: fly image show
+  # upgrade docker image minor version
+  img-up: fly image update 
+  logs: fly logs
+  checks: fly checks list
   conf-save: fly config save # --app <app-name>
   conf: fly config show # --app <app-name>
-  deploy: fly deploy . --image flyio/postgres-flex:15.6

@@ -12,8 +12,8 @@ tasks:
 
   # Note: no auto-stop or auto-start
   fly-sh: fly ssh console
-  fly-up: fly scale count 1
-  fly-down: fly scale count 0
+  fly-up: fly scale count 1 --yes
+  fly-down: fly scale count 0 --yes
   fly-deploy: fly deploy --image ghcr.io/cao7113/flyio-try
   ## dns dig https://fly.io/docs/networking/private-networking/#fly-io-internal-dns
   fly-apps: dig _apps.internal txt
