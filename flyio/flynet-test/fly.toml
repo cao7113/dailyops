@@ -1,0 +1,29 @@
+# fly.toml app configuration file generated for flynet-test on 2024-08-30T08:56:18+08:00
+#
+# See https://fly.io/docs/reference/configuration/ for information about how to use this file.
+#
+
+app = 'flynet-test'
+primary_region = 'nrt'
+
+[build]
+
+[experimental]
+auto_stop_machines = true
+auto_stop_machines_timeout = "5m"
+
+[env]
+PORT = 8080
+
+[[services]]
+protocol = 'tcp'
+internal_port = 8080
+auto_stop_machines = 'stop'
+auto_start_machines = true
+
+
+[[services.ports]]
+port = 8080
+
+[[vm]]
+size = 'shared-cpu-1x'

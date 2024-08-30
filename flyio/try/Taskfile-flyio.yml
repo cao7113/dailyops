@@ -3,7 +3,7 @@ version: "3"
 
 ## Fly.io https://fly.io/docs
 vars:
-  APP: flyuptest
+  APP: flyup-test
 
 tasks:
   default: echo fly on app {{.FLY_APP_NAME}}

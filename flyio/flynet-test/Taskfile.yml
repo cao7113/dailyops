@@ -8,9 +8,9 @@ includes:
     optional: true
 
 tasks:
-  gh: https://github.com/cao7113/dailyops/tree/main/flyio/test
+  gh: https://github.com/cao7113/dailyops/tree/main/flyio/flynet-test
 
-  # Note: no auto-stop or auto-start
+  ## fly
   fly-sh: fly ssh console
   fly-up: fly scale count 1 --yes
   fly-down: fly scale count 0 --yes
@@ -19,5 +19,8 @@ tasks:
   fly-apps: dig _apps.internal txt
 
   ## Docker
-  dk-build: docker build -t flyio-try .
-  dk-sh: docker run --rm -it flyio-try sh
+  dk-build: docker build -t flynet-test .
+  dk-run: 
+    deps: [dk-build]
+    cmds:
+    - docker run --name flynet-test --rm -it -e PORT=7777 -p 6666:7777 flynet-test

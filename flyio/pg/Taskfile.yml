@@ -10,7 +10,7 @@ tasks:
   psql-local: psql postgres://postgres@flypg-test.internal:5432
   # https://fly.io/docs/postgres/managing/attach-detach/
   # why no DATABASE_URL env???
-  attach-test: fly postgres attach {{.FLY_DB_APP}} --app flyuptest
+  attach-test: fly postgres attach {{.FLY_DB_APP}} --app flyup-test
 
   # start after pg cluster stop by auto_stop
   start: fly machine start

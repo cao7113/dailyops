@@ -1,0 +1,22 @@
+# https://taskfile.dev
+version: "3"
+includes:
+  # fly related tasks
+  fly-io:
+    taskfile: ./Taskfile-flyio.yml
+    aliases: [f, fly]
+    optional: true
+
+tasks:
+  gh: https://github.com/cao7113/dailyops/tree/main/flyio/test
+
+  fly-sh: fly ssh console
+  fly-up: fly scale count 1 --yes
+  fly-down: fly scale count 0 --yes
+  fly-deploy: fly deploy --image ghcr.io/cao7113/flyio-try
+  ## dns dig https://fly.io/docs/networking/private-networking/#fly-io-internal-dns
+  fly-apps: dig _apps.internal txt
+
+  ## Docker
+  dk-build: docker build -t flyio-try .
+  dk-sh: docker run --rm -it flyio-try sh
