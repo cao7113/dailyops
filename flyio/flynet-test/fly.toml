@@ -13,7 +13,7 @@ auto_stop_machines = true
 auto_stop_machines_timeout = "5m"
 
 [env]
-PORT = 8080
+PORT = "8080"
 
 [[services]]
 protocol = 'tcp'

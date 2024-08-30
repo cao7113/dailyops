@@ -1,18 +1,28 @@
 # https://taskfile.dev
 version: "3"
+vars:
+  VM_NAME: ssh1
 tasks:
+  ssh: ssh {{.VM_NAME}}.orb.local
+  ssh2: ssh {{.VM_NAME}}@orb
+  info: ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -q {{.VM_NAME}}.orb.local uname -a
   play: ansible-playbook -i inventory.yml playbook.yml # -vvvv
-  ssh1-info: ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -q ssh1.orb.local uname -a
+  play-log: ansible-playbook -i inventory.yml playbook/more-log.yml -v # -vvvv
+  log: ssh ssh1@orb sudo journalctl -u ssh -f
+  log2: ssh ssh1@orb tail -f /var/log/auth.log
+  sshd-conf: ssh ssh1@orb less /etc/ssh/sshd_config
 
-  reset-ssh1:
+
+  reset:
     cmds:
       - task: cleanup
-      - task: setup-ssh1
+      - task: setup
 
-  setup-ssh1:
+  setup-play: ansible-playbook -i inventory.yml playbook/setup.yml
+  setup:
     desc: build a base ubuntu machine with ssh-server on ubuntu 2204 LTS
     cmds:
-      - orb create ubuntu:jammy --arch amd64 ssh1
-      - ansible-playbook -i inventory.yml playbook/setup.yml
+      - orb create ubuntu:jammy --arch amd64 {{.VM_NAME}}
+      - task: setup-play
 
-  cleanup: orb delete --force ssh1
+  cleanup: orb delete --force {{.VM_NAME}}

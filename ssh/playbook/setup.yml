@@ -9,8 +9,19 @@
       ansible.builtin.apt:
         name:
           - openssh-server
+        state: present
+
+    - name: Install Net Tools
+      become: true
+      ansible.builtin.apt:
+        name:
           - net-tools
-        state: latest
+          - curl
+          - git
+          - jq
+          - htop
+          - tree
+        state: present
 
     - name: Copy current ssh pub key
       ansible.posix.authorized_key:

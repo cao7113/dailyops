@@ -1,0 +1,33 @@
+---
+- name: Configure SSH server logging to DEBUG level
+  # hosts: all
+  hosts: orb_ssh
+  become: yes
+
+  tasks:
+    # 下面任务会按时间戳自动backup
+    # - name: Backup the current sshd_config file
+    #   copy:
+    #     src: /etc/ssh/sshd_config
+    #     dest: /etc/ssh/sshd_config.bak
+    #     backup: yes
+
+    - name: Config SSH log level
+      lineinfile:
+        path: /etc/ssh/sshd_config
+        regexp: '^#?LogLevel'
+        # line: 'LogLevel INFO'
+        # line: 'LogLevel VERBOSE'
+        line: 'LogLevel DEBUG3'
+        state: present
+        # create: yes
+        backup: yes
+
+    - name: Restart SSH service to apply changes
+      systemd:
+        name: ssh
+        state: restarted
+        enabled: yes
+
+    # - name: Confirm SSH service is running with DEBUG log level
+    #   shell: grep -E '^LogLevel DEBUG' /etc/ssh/sshd_config
